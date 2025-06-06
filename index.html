@@ -1,0 +1,1128 @@
+
+
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ระบบออมทรัพย์นักเรียน ม.3 โรงเรียนบ้านแม่ทราย</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        * {
+            font-family: 'Sarabun', sans-serif;
+        }
+        .bg-gradient {
+            background: linear-gradient(135deg, #1a5d1a 0%, #3a8c3a 100%);
+        }
+        .menu-item:hover {
+            background-color: rgba(255, 255, 255, 0.1);
+            transform: translateY(-2px);
+            transition: all 0.3s ease;
+        }
+        .dashboard-card {
+            transition: all 0.3s ease;
+        }
+        .dashboard-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+        }
+        .active-tab {
+            background-color: #1a5d1a;
+            color: white;
+        }
+    </style>
+</head>
+<body class="bg-gray-100 min-h-screen">
+    <!-- Header -->
+    <header class="bg-gradient text-white shadow-lg">
+        <div class="container mx-auto px-4 py-3 flex justify-between items-center">
+            <div class="flex items-center space-x-3">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-10 w-10" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                </svg>
+                <div>
+                    <h1 class="text-2xl font-bold">ระบบออมทรัพย์นักเรียน</h1>
+                    <p class="text-sm">โรงเรียนบ้านแม่ทราย</p>
+                </div>
+            </div>
+            <div class="hidden md:flex items-center space-x-4">
+                <button id="btn-dashboard" class="menu-item px-4 py-2 rounded-lg font-medium flex items-center">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z" />
+                    </svg>
+                    แดชบอร์ด
+                </button>
+                <button id="btn-deposit" class="menu-item px-4 py-2 rounded-lg font-medium flex items-center">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
+                    </svg>
+                    บันทึกการออม
+                </button>
+                <button id="btn-student" class="menu-item px-4 py-2 rounded-lg font-medium flex items-center">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z" />
+                    </svg>
+                    เพิ่มนักเรียน
+                </button>
+                <button id="btn-report" class="menu-item px-4 py-2 rounded-lg font-medium flex items-center">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                    </svg>
+                    รายงาน
+                </button>
+                <button id="btn-search" class="menu-item px-4 py-2 rounded-lg font-medium flex items-center">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                    </svg>
+                    ค้นหา
+                </button>
+            </div>
+            <button id="mobile-menu-button" class="md:hidden text-white">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
+                </svg>
+            </button>
+        </div>
+        <!-- Mobile Menu -->
+        <div id="mobile-menu" class="hidden md:hidden px-4 py-2 bg-green-800">
+            <button id="mobile-btn-dashboard" class="block w-full text-left py-2 text-white">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 inline mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z" />
+                </svg>
+                แดชบอร์ด
+            </button>
+            <button id="mobile-btn-deposit" class="block w-full text-left py-2 text-white">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 inline mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
+                </svg>
+                บันทึกการออม
+            </button>
+            <button id="mobile-btn-student" class="block w-full text-left py-2 text-white">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 inline mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z" />
+                </svg>
+                เพิ่มนักเรียน
+            </button>
+            <button id="mobile-btn-report" class="block w-full text-left py-2 text-white">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 inline mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                </svg>
+                รายงาน
+            </button>
+            <button id="mobile-btn-search" class="block w-full text-left py-2 text-white">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 inline mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                </svg>
+                ค้นหา
+            </button>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="container mx-auto px-4 py-6">
+        <!-- Dashboard Section -->
+        <section id="dashboard-section" class="mb-8">
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+                <div class="dashboard-card bg-white rounded-lg shadow-md p-6 border-l-4 border-green-600">
+                    <div class="flex justify-between items-center">
+                        <div>
+                            <h3 class="text-gray-500 text-sm">จำนวนนักเรียนทั้งหมด</h3>
+                            <p class="text-3xl font-bold text-gray-800" id="total-students">0</p>
+                        </div>
+                        <div class="bg-green-100 p-3 rounded-full">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 text-green-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
+                            </svg>
+                        </div>
+                    </div>
+                </div>
+                <div class="dashboard-card bg-white rounded-lg shadow-md p-6 border-l-4 border-blue-600">
+                    <div class="flex justify-between items-center">
+                        <div>
+                            <h3 class="text-gray-500 text-sm">ยอดออมทั้งหมด</h3>
+                            <p class="text-3xl font-bold text-gray-800" id="total-savings">0</p>
+                            <p class="text-sm text-gray-500">บาท</p>
+                        </div>
+                        <div class="bg-blue-100 p-3 rounded-full">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 text-blue-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                            </svg>
+                        </div>
+                    </div>
+                </div>
+                <div class="dashboard-card bg-white rounded-lg shadow-md p-6 border-l-4 border-yellow-600">
+                    <div class="flex justify-between items-center">
+                        <div>
+                            <h3 class="text-gray-500 text-sm">รายการออมวันนี้</h3>
+                            <p class="text-3xl font-bold text-gray-800" id="today-transactions">0</p>
+                            <p class="text-sm text-gray-500">รายการ</p>
+                        </div>
+                        <div class="bg-yellow-100 p-3 rounded-full">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 text-yellow-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
+                            </svg>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div class="bg-white rounded-lg shadow-md p-6">
+                    <h3 class="text-lg font-semibold mb-4">สถิติการออมรายเดือน</h3>
+                    <canvas id="monthly-chart" height="250"></canvas>
+                </div>
+                <div class="bg-white rounded-lg shadow-md p-6">
+                    <h3 class="text-lg font-semibold mb-4">สัดส่วนการออมตามระดับชั้น</h3>
+                    <canvas id="class-chart" height="250"></canvas>
+                </div>
+            </div>
+        </section>
+
+        <!-- Deposit Section -->
+        <section id="deposit-section" class="hidden mb-8">
+            <div class="bg-white rounded-lg shadow-md p-6">
+                <h2 class="text-xl font-bold mb-6">บันทึกการออม</h2>
+                
+                <div class="mb-6">
+                    <label class="block text-gray-700 font-medium mb-2">เลือกระดับชั้น</label>
+                    <div class="flex flex-wrap gap-2">
+                        <button class="class-filter px-4 py-2 rounded-full border border-gray-300 hover:bg-green-100 hover:border-green-500 focus:outline-none" data-class="all">ทั้งหมด</button>
+                        <button class="class-filter px-4 py-2 rounded-full border border-gray-300 hover:bg-green-100 hover:border-green-500 focus:outline-none" data-class="ป.1">ป.1</button>
+                        <button class="class-filter px-4 py-2 rounded-full border border-gray-300 hover:bg-green-100 hover:border-green-500 focus:outline-none" data-class="ป.2">ป.2</button>
+                        <button class="class-filter px-4 py-2 rounded-full border border-gray-300 hover:bg-green-100 hover:border-green-500 focus:outline-none" data-class="ป.3">ป.3</button>
+                        <button class="class-filter px-4 py-2 rounded-full border border-gray-300 hover:bg-green-100 hover:border-green-500 focus:outline-none" data-class="ป.4">ป.4</button>
+                        <button class="class-filter px-4 py-2 rounded-full border border-gray-300 hover:bg-green-100 hover:border-green-500 focus:outline-none" data-class="ป.5">ป.5</button>
+                        <button class="class-filter px-4 py-2 rounded-full border border-gray-300 hover:bg-green-100 hover:border-green-500 focus:outline-none" data-class="ป.6">ป.6</button>
+                        <button class="class-filter px-4 py-2 rounded-full border border-gray-300 hover:bg-green-100 hover:border-green-500 focus:outline-none" data-class="ม.1">ม.1</button>
+                        <button class="class-filter px-4 py-2 rounded-full border border-gray-300 hover:bg-green-100 hover:border-green-500 focus:outline-none" data-class="ม.2">ม.2</button>
+                        <button class="class-filter px-4 py-2 rounded-full border border-gray-300 hover:bg-green-100 hover:border-green-500 focus:outline-none active-tab" data-class="ม.3">ม.3</button>
+                    </div>
+                </div>
+
+                <div class="overflow-x-auto">
+                    <table class="min-w-full bg-white border border-gray-200">
+                        <thead>
+                            <tr class="bg-gray-100">
+                                <th class="py-3 px-4 border-b text-left">เลขที่</th>
+                                <th class="py-3 px-4 border-b text-left">ชื่อ-นามสกุล</th>
+                                <th class="py-3 px-4 border-b text-left">ชั้น</th>
+                                <th class="py-3 px-4 border-b text-left">ยอดออมสะสม</th>
+                                <th class="py-3 px-4 border-b text-left">จำนวนเงิน (บาท)</th>
+                                <th class="py-3 px-4 border-b text-left">บันทึก</th>
+                            </tr>
+                        </thead>
+                        <tbody id="deposit-student-list">
+                            <!-- Student list will be populated here -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </section>
+
+        <!-- Add Student Section -->
+        <section id="student-section" class="hidden mb-8">
+            <div class="bg-white rounded-lg shadow-md p-6">
+                <h2 class="text-xl font-bold mb-6">เพิ่มข้อมูลนักเรียน</h2>
+                <form id="add-student-form" class="space-y-4">
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div>
+                            <label class="block text-gray-700 font-medium mb-2" for="student-number">เลขที่</label>
+                            <input type="number" id="student-number" class="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500" required>
+                        </div>
+                        <div>
+                            <label class="block text-gray-700 font-medium mb-2" for="student-class">ชั้นเรียน</label>
+                            <select id="student-class" class="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500" required>
+                                <option value="">เลือกชั้นเรียน</option>
+                                <option value="ป.1">ป.1</option>
+                                <option value="ป.2">ป.2</option>
+                                <option value="ป.3">ป.3</option>
+                                <option value="ป.4">ป.4</option>
+                                <option value="ป.5">ป.5</option>
+                                <option value="ป.6">ป.6</option>
+                                <option value="ม.1">ม.1</option>
+                                <option value="ม.2">ม.2</option>
+                                <option value="ม.3">ม.3</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="block text-gray-700 font-medium mb-2" for="student-firstname">ชื่อ</label>
+                            <input type="text" id="student-firstname" class="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500" required>
+                        </div>
+                        <div>
+                            <label class="block text-gray-700 font-medium mb-2" for="student-lastname">นามสกุล</label>
+                            <input type="text" id="student-lastname" class="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500" required>
+                        </div>
+                    </div>
+                    <div class="flex justify-end">
+                        <button type="submit" class="bg-green-600 text-white px-6 py-2 rounded-md hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2">
+                            บันทึกข้อมูล
+                        </button>
+                    </div>
+                </form>
+
+                <div class="mt-8">
+                    <h3 class="text-lg font-semibold mb-4">รายชื่อนักเรียนทั้งหมด</h3>
+                    <div class="mb-4 flex items-center">
+                        <label class="mr-2">กรองตามชั้น:</label>
+                        <select id="filter-class" class="px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500">
+                            <option value="all">ทั้งหมด</option>
+                            <option value="ป.1">ป.1</option>
+                            <option value="ป.2">ป.2</option>
+                            <option value="ป.3">ป.3</option>
+                            <option value="ป.4">ป.4</option>
+                            <option value="ป.5">ป.5</option>
+                            <option value="ป.6">ป.6</option>
+                            <option value="ม.1">ม.1</option>
+                            <option value="ม.2">ม.2</option>
+                            <option value="ม.3">ม.3</option>
+                        </select>
+                    </div>
+                    <div class="overflow-x-auto">
+                        <table class="min-w-full bg-white border border-gray-200">
+                            <thead>
+                                <tr class="bg-gray-100">
+                                    <th class="py-3 px-4 border-b text-left">เลขที่</th>
+                                    <th class="py-3 px-4 border-b text-left">ชื่อ-นามสกุล</th>
+                                    <th class="py-3 px-4 border-b text-left">ชั้น</th>
+                                    <th class="py-3 px-4 border-b text-left">ยอดออมสะสม</th>
+                                    <th class="py-3 px-4 border-b text-left">จัดการ</th>
+                                </tr>
+                            </thead>
+                            <tbody id="student-list">
+                                <!-- Student list will be populated here -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Report Section -->
+        <section id="report-section" class="hidden mb-8">
+            <div class="bg-white rounded-lg shadow-md p-6">
+                <h2 class="text-xl font-bold mb-6">รายงานการออม</h2>
+                
+                <div class="mb-6 grid grid-cols-1 md:grid-cols-3 gap-4">
+                    <div>
+                        <label class="block text-gray-700 font-medium mb-2">ระดับชั้น</label>
+                        <select id="report-class-filter" class="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500">
+                            <option value="all">ทั้งหมด</option>
+                            <option value="ป.1">ป.1</option>
+                            <option value="ป.2">ป.2</option>
+                            <option value="ป.3">ป.3</option>
+                            <option value="ป.4">ป.4</option>
+                            <option value="ป.5">ป.5</option>
+                            <option value="ป.6">ป.6</option>
+                            <option value="ม.1">ม.1</option>
+                            <option value="ม.2">ม.2</option>
+                            <option value="ม.3">ม.3</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-gray-700 font-medium mb-2">เดือน</label>
+                        <select id="report-month-filter" class="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500">
+                            <option value="all">ทั้งหมด</option>
+                            <option value="1">มกราคม</option>
+                            <option value="2">กุมภาพันธ์</option>
+                            <option value="3">มีนาคม</option>
+                            <option value="4">เมษายน</option>
+                            <option value="5">พฤษภาคม</option>
+                            <option value="6">มิถุนายน</option>
+                            <option value="7">กรกฎาคม</option>
+                            <option value="8">สิงหาคม</option>
+                            <option value="9">กันยายน</option>
+                            <option value="10">ตุลาคม</option>
+                            <option value="11">พฤศจิกายน</option>
+                            <option value="12">ธันวาคม</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-gray-700 font-medium mb-2">ปี</label>
+                        <select id="report-year-filter" class="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500">
+                            <option value="2023">2566</option>
+                            <option value="2024">2567</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="overflow-x-auto">
+                    <table class="min-w-full bg-white border border-gray-200">
+                        <thead>
+                            <tr class="bg-gray-100">
+                                <th class="py-3 px-4 border-b text-left">เลขที่</th>
+                                <th class="py-3 px-4 border-b text-left">ชื่อ-นามสกุล</th>
+                                <th class="py-3 px-4 border-b text-left">ชั้น</th>
+                                <th class="py-3 px-4 border-b text-left">จำนวนครั้งที่ออม</th>
+                                <th class="py-3 px-4 border-b text-left">ยอดออมสะสม</th>
+                                <th class="py-3 px-4 border-b text-left">ดูรายละเอียด</th>
+                            </tr>
+                        </thead>
+                        <tbody id="report-student-list">
+                            <!-- Report data will be populated here -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </section>
+
+        <!-- Search Section -->
+        <section id="search-section" class="hidden mb-8">
+            <div class="bg-white rounded-lg shadow-md p-6">
+                <h2 class="text-xl font-bold mb-6">ค้นหานักเรียน</h2>
+                
+                <div class="mb-6">
+                    <div class="flex flex-col md:flex-row gap-4">
+                        <div class="flex-grow">
+                            <input type="text" id="search-input" placeholder="ค้นหาตามชื่อหรือนามสกุล" class="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500">
+                        </div>
+                        <div>
+                            <button id="search-button" class="w-full md:w-auto bg-green-600 text-white px-6 py-2 rounded-md hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 inline mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                                </svg>
+                                ค้นหา
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="mb-6">
+                    <h3 class="text-lg font-semibold mb-4">ตัวกรอง</h3>
+                    <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+                        <div>
+                            <label class="block text-gray-700 font-medium mb-2">ระดับชั้น</label>
+                            <select id="search-class-filter" class="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500">
+                                <option value="all">ทั้งหมด</option>
+                                <option value="ป.1">ป.1</option>
+                                <option value="ป.2">ป.2</option>
+                                <option value="ป.3">ป.3</option>
+                                <option value="ป.4">ป.4</option>
+                                <option value="ป.5">ป.5</option>
+                                <option value="ป.6">ป.6</option>
+                                <option value="ม.1">ม.1</option>
+                                <option value="ม.2">ม.2</option>
+                                <option value="ม.3">ม.3</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="block text-gray-700 font-medium mb-2">วัน</label>
+                            <input type="date" id="search-date-filter" class="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500">
+                        </div>
+                        <div>
+                            <label class="block text-gray-700 font-medium mb-2">เดือน</label>
+                            <select id="search-month-filter" class="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500">
+                                <option value="all">ทั้งหมด</option>
+                                <option value="1">มกราคม</option>
+                                <option value="2">กุมภาพันธ์</option>
+                                <option value="3">มีนาคม</option>
+                                <option value="4">เมษายน</option>
+                                <option value="5">พฤษภาคม</option>
+                                <option value="6">มิถุนายน</option>
+                                <option value="7">กรกฎาคม</option>
+                                <option value="8">สิงหาคม</option>
+                                <option value="9">กันยายน</option>
+                                <option value="10">ตุลาคม</option>
+                                <option value="11">พฤศจิกายน</option>
+                                <option value="12">ธันวาคม</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="block text-gray-700 font-medium mb-2">ปี</label>
+                            <select id="search-year-filter" class="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500">
+                                <option value="2023">2566</option>
+                                <option value="2024">2567</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="search-results" class="hidden">
+                    <h3 class="text-lg font-semibold mb-4">ผลการค้นหา</h3>
+                    <div class="overflow-x-auto">
+                        <table class="min-w-full bg-white border border-gray-200">
+                            <thead>
+                                <tr class="bg-gray-100">
+                                    <th class="py-3 px-4 border-b text-left">เลขที่</th>
+                                    <th class="py-3 px-4 border-b text-left">ชื่อ-นามสกุล</th>
+                                    <th class="py-3 px-4 border-b text-left">ชั้น</th>
+                                    <th class="py-3 px-4 border-b text-left">วันที่</th>
+                                    <th class="py-3 px-4 border-b text-left">จำนวนเงิน</th>
+                                </tr>
+                            </thead>
+                            <tbody id="search-result-list">
+                                <!-- Search results will be populated here -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Student Detail Modal -->
+        <div id="student-detail-modal" class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+            <div class="bg-white rounded-lg shadow-lg w-full max-w-4xl max-h-[90vh] overflow-y-auto">
+                <div class="p-6">
+                    <div class="flex justify-between items-center mb-6">
+                        <h2 class="text-xl font-bold" id="modal-student-name">ประวัติการออมของ </h2>
+                        <button id="close-modal" class="text-gray-500 hover:text-gray-700">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                            </svg>
+                        </button>
+                    </div>
+                    
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+                        <div class="bg-green-50 p-4 rounded-lg">
+                            <h3 class="text-sm text-gray-500">เลขที่</h3>
+                            <p class="text-xl font-bold" id="modal-student-number"></p>
+                        </div>
+                        <div class="bg-green-50 p-4 rounded-lg">
+                            <h3 class="text-sm text-gray-500">ชั้น</h3>
+                            <p class="text-xl font-bold" id="modal-student-class"></p>
+                        </div>
+                        <div class="bg-green-50 p-4 rounded-lg">
+                            <h3 class="text-sm text-gray-500">ยอดออมสะสม</h3>
+                            <p class="text-xl font-bold" id="modal-student-total"></p>
+                        </div>
+                    </div>
+                    
+                    <h3 class="text-lg font-semibold mb-4">ประวัติการออม</h3>
+                    <div class="overflow-x-auto">
+                        <table class="min-w-full bg-white border border-gray-200">
+                            <thead>
+                                <tr class="bg-gray-100">
+                                    <th class="py-3 px-4 border-b text-left">วันที่</th>
+                                    <th class="py-3 px-4 border-b text-left">จำนวนเงิน</th>
+                                </tr>
+                            </thead>
+                            <tbody id="modal-transaction-list">
+                                <!-- Transaction history will be populated here -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-gradient text-white py-6">
+        <div class="container mx-auto px-4">
+            <div class="flex flex-col md:flex-row justify-between items-center">
+                <div class="mb-4 md:mb-0">
+                    <p class="text-center md:text-left">© 2023 ระบบออมทรัพย์นักเรียน ม.3 โรงเรียนบ้านแม่ทราย</p>
+                    <p class="text-center md:text-left text-sm">พัฒนาโดย ครู อุดร มะโนเนือง</p>
+                </div>
+                <div class="flex space-x-4">
+                    <a href="#" class="hover:text-green-200">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+                        </svg>
+                    </a>
+                    <a href="#" class="hover:text-green-200">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" />
+                        </svg>
+                    </a>
+                    <a href="#" class="hover:text-green-200">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                        </svg>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // Sample data
+        let students = [
+            { id: 1, number: 1, firstname: "สมชาย", lastname: "ใจดี", class: "ม.3", totalSavings: 1500 },
+            { id: 2, number: 2, firstname: "สมหญิง", lastname: "รักเรียน", class: "ม.3", totalSavings: 2000 },
+            { id: 3, number: 3, firstname: "วิชัย", lastname: "เก่งกล้า", class: "ม.3", totalSavings: 1200 },
+            { id: 4, number: 4, firstname: "มานี", lastname: "มีทรัพย์", class: "ม.3", totalSavings: 3000 },
+            { id: 5, number: 5, firstname: "สุดา", lastname: "ใฝ่ดี", class: "ม.3", totalSavings: 1800 },
+            { id: 6, number: 1, firstname: "ภูมิ", lastname: "ปัญญา", class: "ม.2", totalSavings: 1300 },
+            { id: 7, number: 2, firstname: "รุ่ง", lastname: "โรจน์", class: "ม.2", totalSavings: 900 },
+            { id: 8, number: 1, firstname: "ธารา", lastname: "น้ำใส", class: "ม.1", totalSavings: 1100 },
+            { id: 9, number: 1, firstname: "พิมพ์", lastname: "สวย", class: "ป.6", totalSavings: 800 },
+            { id: 10, number: 1, firstname: "ก้อง", lastname: "เกียรติ", class: "ป.5", totalSavings: 600 }
+        ];
+
+        let transactions = [
+            { studentId: 1, date: "2023-10-01", amount: 100 },
+            { studentId: 1, date: "2023-10-08", amount: 200 },
+            { studentId: 1, date: "2023-10-15", amount: 300 },
+            { studentId: 1, date: "2023-10-22", amount: 400 },
+            { studentId: 1, date: "2023-10-29", amount: 500 },
+            { studentId: 2, date: "2023-10-01", amount: 500 },
+            { studentId: 2, date: "2023-10-08", amount: 500 },
+            { studentId: 2, date: "2023-10-15", amount: 500 },
+            { studentId: 2, date: "2023-10-22", amount: 500 },
+            { studentId: 3, date: "2023-10-01", amount: 300 },
+            { studentId: 3, date: "2023-10-08", amount: 300 },
+            { studentId: 3, date: "2023-10-15", amount: 300 },
+            { studentId: 3, date: "2023-10-22", amount: 300 },
+            { studentId: 4, date: "2023-10-01", amount: 1000 },
+            { studentId: 4, date: "2023-10-15", amount: 1000 },
+            { studentId: 4, date: "2023-10-29", amount: 1000 },
+            { studentId: 5, date: "2023-10-01", amount: 600 },
+            { studentId: 5, date: "2023-10-15", amount: 600 },
+            { studentId: 5, date: "2023-10-29", amount: 600 },
+            { studentId: 6, date: "2023-10-01", amount: 300 },
+            { studentId: 6, date: "2023-10-15", amount: 500 },
+            { studentId: 6, date: "2023-10-29", amount: 500 },
+            { studentId: 7, date: "2023-10-01", amount: 300 },
+            { studentId: 7, date: "2023-10-15", amount: 300 },
+            { studentId: 7, date: "2023-10-29", amount: 300 },
+            { studentId: 8, date: "2023-10-01", amount: 400 },
+            { studentId: 8, date: "2023-10-15", amount: 300 },
+            { studentId: 8, date: "2023-10-29", amount: 400 },
+            { studentId: 9, date: "2023-10-01", amount: 200 },
+            { studentId: 9, date: "2023-10-15", amount: 300 },
+            { studentId: 9, date: "2023-10-29", amount: 300 },
+            { studentId: 10, date: "2023-10-01", amount: 200 },
+            { studentId: 10, date: "2023-10-15", amount: 200 },
+            { studentId: 10, date: "2023-10-29", amount: 200 }
+        ];
+
+        // Initialize local storage if empty
+        if (!localStorage.getItem('students')) {
+            localStorage.setItem('students', JSON.stringify(students));
+        } else {
+            students = JSON.parse(localStorage.getItem('students'));
+        }
+
+        if (!localStorage.getItem('transactions')) {
+            localStorage.setItem('transactions', JSON.stringify(transactions));
+        } else {
+            transactions = JSON.parse(localStorage.getItem('transactions'));
+        }
+
+        // DOM Elements
+        const sections = {
+            dashboard: document.getElementById('dashboard-section'),
+            deposit: document.getElementById('deposit-section'),
+            student: document.getElementById('student-section'),
+            report: document.getElementById('report-section'),
+            search: document.getElementById('search-section')
+        };
+
+        // Navigation
+        function showSection(sectionId) {
+            Object.keys(sections).forEach(key => {
+                sections[key].classList.add('hidden');
+            });
+            sections[sectionId].classList.remove('hidden');
+        }
+
+        // Event Listeners for Navigation
+        document.getElementById('btn-dashboard').addEventListener('click', () => showSection('dashboard'));
+        document.getElementById('btn-deposit').addEventListener('click', () => showSection('deposit'));
+        document.getElementById('btn-student').addEventListener('click', () => showSection('student'));
+        document.getElementById('btn-report').addEventListener('click', () => showSection('report'));
+        document.getElementById('btn-search').addEventListener('click', () => showSection('search'));
+
+        document.getElementById('mobile-btn-dashboard').addEventListener('click', () => showSection('dashboard'));
+        document.getElementById('mobile-btn-deposit').addEventListener('click', () => showSection('deposit'));
+        document.getElementById('mobile-btn-student').addEventListener('click', () => showSection('student'));
+        document.getElementById('mobile-btn-report').addEventListener('click', () => showSection('report'));
+        document.getElementById('mobile-btn-search').addEventListener('click', () => showSection('search'));
+
+        // Mobile menu toggle
+        document.getElementById('mobile-menu-button').addEventListener('click', () => {
+            const mobileMenu = document.getElementById('mobile-menu');
+            mobileMenu.classList.toggle('hidden');
+        });
+
+        // Dashboard Charts
+        function initializeCharts() {
+            // Monthly Chart
+            const monthlyData = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
+            transactions.forEach(transaction => {
+                const month = new Date(transaction.date).getMonth();
+                monthlyData[month] += transaction.amount;
+            });
+
+            const monthlyCtx = document.getElementById('monthly-chart').getContext('2d');
+            new Chart(monthlyCtx, {
+                type: 'bar',
+                data: {
+                    labels: ['ม.ค.', 'ก.พ.', 'มี.ค.', 'เม.ย.', 'พ.ค.', 'มิ.ย.', 'ก.ค.', 'ส.ค.', 'ก.ย.', 'ต.ค.', 'พ.ย.', 'ธ.ค.'],
+                    datasets: [{
+                        label: 'ยอดออมรายเดือน (บาท)',
+                        data: monthlyData,
+                        backgroundColor: 'rgba(26, 93, 26, 0.7)',
+                        borderColor: 'rgba(26, 93, 26, 1)',
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    scales: {
+                        y: {
+                            beginAtZero: true
+                        }
+                    }
+                }
+            });
+
+            // Class Chart
+            const classData = {};
+            students.forEach(student => {
+                if (!classData[student.class]) {
+                    classData[student.class] = 0;
+                }
+                classData[student.class] += student.totalSavings;
+            });
+
+            const classLabels = Object.keys(classData);
+            const classValues = Object.values(classData);
+
+            const classCtx = document.getElementById('class-chart').getContext('2d');
+            new Chart(classCtx, {
+                type: 'pie',
+                data: {
+                    labels: classLabels,
+                    datasets: [{
+                        label: 'ยอดออมตามระดับชั้น (บาท)',
+                        data: classValues,
+                        backgroundColor: [
+                            'rgba(26, 93, 26, 0.7)',
+                            'rgba(58, 140, 58, 0.7)',
+                            'rgba(90, 185, 90, 0.7)',
+                            'rgba(122, 230, 122, 0.7)',
+                            'rgba(154, 255, 154, 0.7)',
+                            'rgba(26, 93, 93, 0.7)',
+                            'rgba(58, 140, 140, 0.7)',
+                            'rgba(90, 185, 185, 0.7)',
+                            'rgba(122, 230, 230, 0.7)'
+                        ],
+                        borderColor: [
+                            'rgba(26, 93, 26, 1)',
+                            'rgba(58, 140, 58, 1)',
+                            'rgba(90, 185, 90, 1)',
+                            'rgba(122, 230, 122, 1)',
+                            'rgba(154, 255, 154, 1)',
+                            'rgba(26, 93, 93, 1)',
+                            'rgba(58, 140, 140, 1)',
+                            'rgba(90, 185, 185, 1)',
+                            'rgba(122, 230, 230, 1)'
+                        ],
+                        borderWidth: 1
+                    }]
+                }
+            });
+        }
+
+        // Update Dashboard Stats
+        function updateDashboardStats() {
+            document.getElementById('total-students').textContent = students.length;
+            
+            const totalSavings = students.reduce((sum, student) => sum + student.totalSavings, 0);
+            document.getElementById('total-savings').textContent = totalSavings.toLocaleString();
+            
+            const today = new Date().toISOString().split('T')[0];
+            const todayTransactions = transactions.filter(t => t.date === today).length;
+            document.getElementById('today-transactions').textContent = todayTransactions;
+        }
+
+        // Populate Student List
+        function populateStudentList(filterClass = 'all') {
+            const studentList = document.getElementById('student-list');
+            studentList.innerHTML = '';
+            
+            const filteredStudents = filterClass === 'all' 
+                ? students 
+                : students.filter(student => student.class === filterClass);
+            
+            filteredStudents.forEach(student => {
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td class="py-3 px-4 border-b">${student.number}</td>
+                    <td class="py-3 px-4 border-b">${student.firstname} ${student.lastname}</td>
+                    <td class="py-3 px-4 border-b">${student.class}</td>
+                    <td class="py-3 px-4 border-b">${student.totalSavings.toLocaleString()} บาท</td>
+                    <td class="py-3 px-4 border-b">
+                        <button class="edit-student bg-blue-500 text-white px-3 py-1 rounded-md hover:bg-blue-600 mr-2" data-id="${student.id}">แก้ไข</button>
+                        <button class="delete-student bg-red-500 text-white px-3 py-1 rounded-md hover:bg-red-600" data-id="${student.id}">ลบ</button>
+                    </td>
+                `;
+                studentList.appendChild(row);
+            });
+
+            // Add event listeners to edit and delete buttons
+            document.querySelectorAll('.edit-student').forEach(button => {
+                button.addEventListener('click', function() {
+                    const studentId = parseInt(this.getAttribute('data-id'));
+                    editStudent(studentId);
+                });
+            });
+
+            document.querySelectorAll('.delete-student').forEach(button => {
+                button.addEventListener('click', function() {
+                    const studentId = parseInt(this.getAttribute('data-id'));
+                    deleteStudent(studentId);
+                });
+            });
+        }
+
+        // Populate Deposit Student List
+        function populateDepositStudentList(filterClass = 'all') {
+            const depositStudentList = document.getElementById('deposit-student-list');
+            depositStudentList.innerHTML = '';
+            
+            const filteredStudents = filterClass === 'all' 
+                ? students 
+                : students.filter(student => student.class === filterClass);
+            
+            filteredStudents.forEach(student => {
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td class="py-3 px-4 border-b">${student.number}</td>
+                    <td class="py-3 px-4 border-b">${student.firstname} ${student.lastname}</td>
+                    <td class="py-3 px-4 border-b">${student.class}</td>
+                    <td class="py-3 px-4 border-b">${student.totalSavings.toLocaleString()} บาท</td>
+                    <td class="py-3 px-4 border-b">
+                        <input type="number" class="deposit-amount w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500" min="1" placeholder="จำนวนเงิน">
+                    </td>
+                    <td class="py-3 px-4 border-b">
+                        <button class="save-deposit bg-green-600 text-white px-4 py-2 rounded-md hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2" data-id="${student.id}">บันทึก</button>
+                    </td>
+                `;
+                depositStudentList.appendChild(row);
+            });
+
+            // Add event listeners to save deposit buttons
+            document.querySelectorAll('.save-deposit').forEach(button => {
+                button.addEventListener('click', function() {
+                    const studentId = parseInt(this.getAttribute('data-id'));
+                    const amountInput = this.closest('tr').querySelector('.deposit-amount');
+                    const amount = parseInt(amountInput.value);
+                    
+                    if (isNaN(amount) || amount <= 0) {
+                        alert('กรุณาระบุจำนวนเงินที่ถูกต้อง');
+                        return;
+                    }
+                    
+                    saveDeposit(studentId, amount);
+                    amountInput.value = '';
+                });
+            });
+        }
+
+        // Populate Report Student List
+        function populateReportStudentList(filterClass = 'all', filterMonth = 'all', filterYear = '2023') {
+            const reportStudentList = document.getElementById('report-student-list');
+            reportStudentList.innerHTML = '';
+            
+            let filteredStudents = filterClass === 'all' 
+                ? [...students] 
+                : students.filter(student => student.class === filterClass);
+            
+            filteredStudents.forEach(student => {
+                let studentTransactions = transactions.filter(t => t.studentId === student.id);
+                
+                if (filterMonth !== 'all') {
+                    studentTransactions = studentTransactions.filter(t => {
+                        const transactionDate = new Date(t.date);
+                        return transactionDate.getMonth() + 1 === parseInt(filterMonth) && 
+                               transactionDate.getFullYear() === parseInt(filterYear);
+                    });
+                } else if (filterYear) {
+                    studentTransactions = studentTransactions.filter(t => {
+                        const transactionDate = new Date(t.date);
+                        return transactionDate.getFullYear() === parseInt(filterYear);
+                    });
+                }
+                
+                const transactionCount = studentTransactions.length;
+                const totalAmount = studentTransactions.reduce((sum, t) => sum + t.amount, 0);
+                
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td class="py-3 px-4 border-b">${student.number}</td>
+                    <td class="py-3 px-4 border-b">${student.firstname} ${student.lastname}</td>
+                    <td class="py-3 px-4 border-b">${student.class}</td>
+                    <td class="py-3 px-4 border-b">${transactionCount} ครั้ง</td>
+                    <td class="py-3 px-4 border-b">${totalAmount.toLocaleString()} บาท</td>
+                    <td class="py-3 px-4 border-b">
+                        <button class="view-detail bg-blue-500 text-white px-3 py-1 rounded-md hover:bg-blue-600" data-id="${student.id}">ดูรายละเอียด</button>
+                    </td>
+                `;
+                reportStudentList.appendChild(row);
+            });
+
+            // Add event listeners to view detail buttons
+            document.querySelectorAll('.view-detail').forEach(button => {
+                button.addEventListener('click', function() {
+                    const studentId = parseInt(this.getAttribute('data-id'));
+                    showStudentDetail(studentId);
+                });
+            });
+        }
+
+        // Search Students
+        function searchStudents() {
+            const searchInput = document.getElementById('search-input').value.toLowerCase();
+            const classFilter = document.getElementById('search-class-filter').value;
+            const dateFilter = document.getElementById('search-date-filter').value;
+            const monthFilter = document.getElementById('search-month-filter').value;
+            const yearFilter = document.getElementById('search-year-filter').value;
+            
+            const searchResultList = document.getElementById('search-result-list');
+            searchResultList.innerHTML = '';
+            
+            // Filter students by name
+            let filteredStudents = students.filter(student => 
+                student.firstname.toLowerCase().includes(searchInput) || 
+                student.lastname.toLowerCase().includes(searchInput)
+            );
+            
+            // Apply class filter if not 'all'
+            if (classFilter !== 'all') {
+                filteredStudents = filteredStudents.filter(student => student.class === classFilter);
+            }
+            
+            // Create result rows
+            filteredStudents.forEach(student => {
+                let studentTransactions = transactions.filter(t => t.studentId === student.id);
+                
+                // Apply date filter if provided
+                if (dateFilter) {
+                    studentTransactions = studentTransactions.filter(t => t.date === dateFilter);
+                }
+                
+                // Apply month filter if not 'all'
+                if (monthFilter !== 'all') {
+                    studentTransactions = studentTransactions.filter(t => {
+                        const transactionDate = new Date(t.date);
+                        return transactionDate.getMonth() + 1 === parseInt(monthFilter);
+                    });
+                }
+                
+                // Apply year filter
+                if (yearFilter) {
+                    studentTransactions = studentTransactions.filter(t => {
+                        const transactionDate = new Date(t.date);
+                        return transactionDate.getFullYear() === parseInt(yearFilter);
+                    });
+                }
+                
+                // Create a row for each transaction
+                studentTransactions.forEach(transaction => {
+                    const row = document.createElement('tr');
+                    const formattedDate = new Date(transaction.date).toLocaleDateString('th-TH', {
+                        year: 'numeric',
+                        month: 'long',
+                        day: 'numeric'
+                    });
+                    
+                    row.innerHTML = `
+                        <td class="py-3 px-4 border-b">${student.number}</td>
+                        <td class="py-3 px-4 border-b">${student.firstname} ${student.lastname}</td>
+                        <td class="py-3 px-4 border-b">${student.class}</td>
+                        <td class="py-3 px-4 border-b">${formattedDate}</td>
+                        <td class="py-3 px-4 border-b">${transaction.amount.toLocaleString()} บาท</td>
+                    `;
+                    searchResultList.appendChild(row);
+                });
+            });
+            
+            document.getElementById('search-results').classList.remove('hidden');
+        }
+
+        // Add Student
+        document.getElementById('add-student-form').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const number = parseInt(document.getElementById('student-number').value);
+            const firstname = document.getElementById('student-firstname').value;
+            const lastname = document.getElementById('student-lastname').value;
+            const studentClass = document.getElementById('student-class').value;
+            
+            const newStudent = {
+                id: students.length > 0 ? Math.max(...students.map(s => s.id)) + 1 : 1,
+                number: number,
+                firstname: firstname,
+                lastname: lastname,
+                class: studentClass,
+                totalSavings: 0
+            };
+            
+            students.push(newStudent);
+            localStorage.setItem('students', JSON.stringify(students));
+            
+            document.getElementById('student-number').value = '';
+            document.getElementById('student-firstname').value = '';
+            document.getElementById('student-lastname').value = '';
+            document.getElementById('student-class').value = '';
+            
+            populateStudentList(document.getElementById('filter-class').value);
+            updateDashboardStats();
+            alert('เพิ่มข้อมูลนักเรียนเรียบร้อยแล้ว');
+        });
+
+        // Edit Student
+        function editStudent(studentId) {
+            const student = students.find(s => s.id === studentId);
+            if (!student) return;
+            
+            const newNumber = prompt('เลขที่:', student.number);
+            if (newNumber === null) return;
+            
+            const newFirstname = prompt('ชื่อ:', student.firstname);
+            if (newFirstname === null) return;
+            
+            const newLastname = prompt('นามสกุล:', student.lastname);
+            if (newLastname === null) return;
+            
+            const newClass = prompt('ชั้น (ป.1-ม.3):', student.class);
+            if (newClass === null) return;
+            
+            student.number = parseInt(newNumber);
+            student.firstname = newFirstname;
+            student.lastname = newLastname;
+            student.class = newClass;
+            
+            localStorage.setItem('students', JSON.stringify(students));
+            populateStudentList(document.getElementById('filter-class').value);
+            alert('แก้ไขข้อมูลนักเรียนเรียบร้อยแล้ว');
+        }
+
+        // Delete Student
+        function deleteStudent(studentId) {
+            if (!confirm('คุณต้องการลบข้อมูลนักเรียนนี้ใช่หรือไม่?')) return;
+            
+            const studentIndex = students.findIndex(s => s.id === studentId);
+            if (studentIndex === -1) return;
+            
+            students.splice(studentIndex, 1);
+            
+            // Also delete all transactions for this student
+            transactions = transactions.filter(t => t.studentId !== studentId);
+            
+            localStorage.setItem('students', JSON.stringify(students));
+            localStorage.setItem('transactions', JSON.stringify(transactions));
+            
+            populateStudentList(document.getElementById('filter-class').value);
+            updateDashboardStats();
+            alert('ลบข้อมูลนักเรียนเรียบร้อยแล้ว');
+        }
+
+        // Save Deposit
+        function saveDeposit(studentId, amount) {
+            const student = students.find(s => s.id === studentId);
+            if (!student) return;
+            
+            const today = new Date().toISOString().split('T')[0];
+            
+            const newTransaction = {
+                studentId: studentId,
+                date: today,
+                amount: amount
+            };
+            
+            transactions.push(newTransaction);
+            student.totalSavings += amount;
+            
+            localStorage.setItem('students', JSON.stringify(students));
+            localStorage.setItem('transactions', JSON.stringify(transactions));
+            
+            populateDepositStudentList(document.querySelector('.class-filter.active-tab').getAttribute('data-class'));
+            updateDashboardStats();
+            alert(`บันทึกการออมของ ${student.firstname} ${student.lastname} จำนวน ${amount} บาท เรียบร้อยแล้ว`);
+        }
+
+        // Show Student Detail
+        function showStudentDetail(studentId) {
+            const student = students.find(s => s.id === studentId);
+            if (!student) return;
+            
+            document.getElementById('modal-student-name').textContent = `ประวัติการออมของ ${student.firstname} ${student.lastname}`;
+            document.getElementById('modal-student-number').textContent = student.number;
+            document.getElementById('modal-student-class').textContent = student.class;
+            document.getElementById('modal-student-total').textContent = `${student.totalSavings.toLocaleString()} บาท`;
+            
+            const modalTransactionList = document.getElementById('modal-transaction-list');
+            modalTransactionList.innerHTML = '';
+            
+            const studentTransactions = transactions.filter(t => t.studentId === student.id);
+            studentTransactions.sort((a, b) => new Date(b.date) - new Date(a.date));
+            
+            studentTransactions.forEach(transaction => {
+                const row = document.createElement('tr');
+                const formattedDate = new Date(transaction.date).toLocaleDateString('th-TH', {
+                    year: 'numeric',
+                    month: 'long',
+                    day: 'numeric'
+                });
+                
+                row.innerHTML = `
+                    <td class="py-3 px-4 border-b">${formattedDate}</td>
+                    <td class="py-3 px-4 border-b">${transaction.amount.toLocaleString()} บาท</td>
+                `;
+                modalTransactionList.appendChild(row);
+            });
+            
+            document.getElementById('student-detail-modal').classList.remove('hidden');
+        }
+
+        // Close Modal
+        document.getElementById('close-modal').addEventListener('click', function() {
+            document.getElementById('student-detail-modal').classList.add('hidden');
+        });
+
+        // Class Filter for Deposit
+        document.querySelectorAll('.class-filter').forEach(button => {
+            button.addEventListener('click', function() {
+                document.querySelectorAll('.class-filter').forEach(btn => {
+                    btn.classList.remove('active-tab');
+                });
+                this.classList.add('active-tab');
+                
+                const filterClass = this.getAttribute('data-class');
+                populateDepositStudentList(filterClass);
+            });
+        });
+
+        // Filter Class for Student List
+        document.getElementById('filter-class').addEventListener('change', function() {
+            populateStudentList(this.value);
+        });
+
+        // Report Filters
+        document.getElementById('report-class-filter').addEventListener('change', function() {
+            const classFilter = this.value;
+            const monthFilter = document.getElementById('report-month-filter').value;
+            const yearFilter = document.getElementById('report-year-filter').value;
+            populateReportStudentList(classFilter, monthFilter, yearFilter);
+        });
+
+        document.getElementById('report-month-filter').addEventListener('change', function() {
+            const classFilter = document.getElementById('report-class-filter').value;
+            const monthFilter = this.value;
+            const yearFilter = document.getElementById('report-year-filter').value;
+            populateReportStudentList(classFilter, monthFilter, yearFilter);
+        });
+
+        document.getElementById('report-year-filter').addEventListener('change', function() {
+            const classFilter = document.getElementById('report-class-filter').value;
+            const monthFilter = document.getElementById('report-month-filter').value;
+            const yearFilter = this.value;
+            populateReportStudentList(classFilter, monthFilter, yearFilter);
+        });
+
+        // Search Button
+        document.getElementById('search-button').addEventListener('click', searchStudents);
+
+        // Initialize
+        updateDashboardStats();
+        initializeCharts();
+        populateStudentList();
+        populateDepositStudentList('ม.3');
+        populateReportStudentList();
+    </script>
+</body>
+</html>
