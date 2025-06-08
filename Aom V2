@@ -1,0 +1,859 @@
+
+
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ระบบออมทรัพย์โรงเรียนบ้านแม่ทราย</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <style>
+        body {
+            font-family: 'Sarabun', sans-serif;
+            background-color: #f0f4f0;
+        }
+        .menu-item {
+            position: relative;
+            transition: all 0.3s ease;
+        }
+        .menu-item::after {
+            content: '';
+            position: absolute;
+            width: 0;
+            height: 2px;
+            bottom: -2px;
+            left: 0;
+            background-color: #10B981;
+            transition: width 0.3s ease;
+        }
+        .menu-item:hover::after, .menu-item.active::after {
+            width: 100%;
+        }
+        .menu-item.active {
+            color: #10B981;
+            font-weight: 600;
+        }
+        .dashboard-card {
+            transition: all 0.3s ease;
+        }
+        .dashboard-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+        }
+        .pagination-btn {
+            transition: all 0.2s ease;
+        }
+        .pagination-btn:hover:not(.disabled) {
+            background-color: #10B981;
+            color: white;
+        }
+        .search-input:focus {
+            box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.2);
+        }
+        .action-btn {
+            transition: all 0.2s ease;
+        }
+        .action-btn:hover {
+            transform: translateY(-2px);
+        }
+        .action-btn-save {
+            background-color: #10B981;
+        }
+        .action-btn-save:hover {
+            background-color: #059669;
+        }
+        .action-btn-history {
+            background-color: #3B82F6;
+        }
+        .action-btn-history:hover {
+            background-color: #2563EB;
+        }
+    </style>
+</head>
+<body>
+    <div class="min-h-screen flex flex-col">
+        <!-- Header -->
+        <header class="bg-white shadow-md">
+            <div class="container mx-auto px-4 py-3 flex flex-col md:flex-row items-center">
+                <div class="flex flex-col items-center md:items-start mb-4 md:mb-0">
+                    <img src="https://img2.pic.in.th/pic/LINE_NOTE_250606_13e837b24df7e0ea8.jpg" alt="โลโก้โรงเรียนบ้านแม่ทราย" class="h-[120px] w-auto object-contain">
+                    <h1 class="text-xl font-bold text-green-600 mt-2 text-center">ระบบออมทรัพย์โรงเรียนบ้านแม่ทราย</h1>
+                </div>
+                
+                <nav class="md:ml-auto flex flex-wrap justify-center">
+                    <button class="menu-item mx-3 py-2 text-gray-700 hover:text-green-600 active" onclick="showSection('dashboard')">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 inline-block mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zm10 0a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zm10 0a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z" />
+                        </svg>
+                        แดชบอร์ดการออม
+                    </button>
+                    <button class="menu-item mx-3 py-2 text-gray-700 hover:text-green-600" onclick="showSection('savings')">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 inline-block mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                        </svg>
+                        บันทึกการออม
+                    </button>
+                </nav>
+            </div>
+        </header>
+
+        <!-- Main Content -->
+        <main class="flex-grow container mx-auto px-4 py-6">
+            <!-- Dashboard Section -->
+            <section id="dashboard" class="section active">
+                <div class="bg-white rounded-lg shadow-md p-6 mb-6">
+                    <h2 class="text-2xl font-bold text-gray-800 mb-4">แดชบอร์ดการออม</h2>
+                    
+                    <!-- Search and Filter -->
+                    <div class="flex flex-col md:flex-row gap-4 mb-6">
+                        <div class="flex-1">
+                            <label class="block text-sm font-medium text-gray-700 mb-1">ค้นหา</label>
+                            <div class="relative">
+                                <input type="text" id="searchInput" placeholder="ค้นหาชื่อนักเรียน..." class="search-input w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-gray-400 absolute right-3 top-2.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                                </svg>
+                            </div>
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">เลือกชั้นเรียน</label>
+                            <select id="classFilter" class="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500">
+                                <option value="all">ทุกชั้นเรียน</option>
+                                <option value="ม.3/1">ม.3/1</option>
+                                <option value="ม.3/2">ม.3/2</option>
+                                <option value="ม.3/3">ม.3/3</option>
+                            </select>
+                        </div>
+                        <div class="self-end">
+                            <button onclick="generatePDF()" class="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-md transition duration-300 flex items-center">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z" />
+                                </svg>
+                                สร้าง PDF
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <!-- Charts -->
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+                        <div class="bg-white p-4 rounded-lg shadow border border-gray-100">
+                            <h3 class="text-lg font-semibold mb-4 text-gray-700">สัดส่วนการออมตามชั้นเรียน</h3>
+                            <div class="h-64">
+                                <canvas id="pieChart"></canvas>
+                            </div>
+                        </div>
+                        <div class="bg-white p-4 rounded-lg shadow border border-gray-100">
+                            <h3 class="text-lg font-semibold mb-4 text-gray-700">การออมรายเดือน</h3>
+                            <div class="h-64">
+                                <canvas id="barChart"></canvas>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Student Savings Table -->
+                    <div class="overflow-x-auto">
+                        <table class="min-w-full bg-white border border-gray-200">
+                            <thead>
+                                <tr class="bg-gray-100">
+                                    <th class="py-3 px-4 text-left text-sm font-semibold text-gray-700 border-b">ลำดับ</th>
+                                    <th class="py-3 px-4 text-left text-sm font-semibold text-gray-700 border-b">รหัสนักเรียน</th>
+                                    <th class="py-3 px-4 text-left text-sm font-semibold text-gray-700 border-b">ชื่อ-นามสกุล</th>
+                                    <th class="py-3 px-4 text-left text-sm font-semibold text-gray-700 border-b">ชั้น</th>
+                                    <th class="py-3 px-4 text-left text-sm font-semibold text-gray-700 border-b">ยอดออมสะสม</th>
+                                    <th class="py-3 px-4 text-left text-sm font-semibold text-gray-700 border-b">ออมล่าสุด</th>
+                                    <th class="py-3 px-4 text-left text-sm font-semibold text-gray-700 border-b">จัดการ</th>
+                                </tr>
+                            </thead>
+                            <tbody id="studentTable">
+                                <!-- Table data will be populated by JavaScript -->
+                            </tbody>
+                        </table>
+                    </div>
+                    
+                    <!-- Pagination -->
+                    <div class="flex justify-between items-center mt-4">
+                        <div class="text-sm text-gray-600">
+                            แสดง <span id="startRecord">1</span> ถึง <span id="endRecord">10</span> จาก <span id="totalRecords">0</span> รายการ
+                        </div>
+                        <div class="flex space-x-1">
+                            <button id="prevPage" class="pagination-btn px-3 py-1 rounded border border-gray-300 text-sm disabled:opacity-50 disabled:cursor-not-allowed">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
+                                </svg>
+                            </button>
+                            <div id="pageNumbers" class="flex space-x-1">
+                                <!-- Page numbers will be populated by JavaScript -->
+                            </div>
+                            <button id="nextPage" class="pagination-btn px-3 py-1 rounded border border-gray-300 text-sm">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+                                </svg>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- PDF Preview -->
+                <div class="bg-white rounded-lg shadow-md p-6">
+                    <h2 class="text-2xl font-bold text-gray-800 mb-4">ตัวอย่าง PDF</h2>
+                    <div class="border border-gray-300 p-4 rounded-lg">
+                        <div id="pdfPreview" class="bg-white p-6 mx-auto max-w-4xl">
+                            <div class="flex items-center justify-center mb-6">
+                                <img src="https://img2.pic.in.th/pic/LINE_NOTE_250606_13e837b24df7e0ea8.jpg" alt="โลโก้โรงเรียนบ้านแม่ทราย" class="h-20 w-auto mr-4">
+                                <div>
+                                    <h2 class="text-xl font-bold text-center">รายงานการออมทรัพย์นักเรียน</h2>
+                                    <h3 class="text-lg font-semibold text-center">โรงเรียนบ้านแม่ทราย</h3>
+                                    <p class="text-sm text-center">ประจำเดือน มิถุนายน 2566</p>
+                                </div>
+                            </div>
+                            
+                            <table class="min-w-full border border-gray-300">
+                                <thead>
+                                    <tr class="bg-gray-100">
+                                        <th class="py-2 px-3 text-left text-sm border-b">ลำดับ</th>
+                                        <th class="py-2 px-3 text-left text-sm border-b">รหัสนักเรียน</th>
+                                        <th class="py-2 px-3 text-left text-sm border-b">ชื่อ-นามสกุล</th>
+                                        <th class="py-2 px-3 text-left text-sm border-b">ชั้น</th>
+                                        <th class="py-2 px-3 text-left text-sm border-b">ยอดออมสะสม</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td class="py-2 px-3 text-sm border-b">1</td>
+                                        <td class="py-2 px-3 text-sm border-b">63001</td>
+                                        <td class="py-2 px-3 text-sm border-b">เด็กชายสมชาย ใจดี</td>
+                                        <td class="py-2 px-3 text-sm border-b">ม.3/1</td>
+                                        <td class="py-2 px-3 text-sm border-b">1,250 บาท</td>
+                                    </tr>
+                                    <tr>
+                                        <td class="py-2 px-3 text-sm border-b">2</td>
+                                        <td class="py-2 px-3 text-sm border-b">63002</td>
+                                        <td class="py-2 px-3 text-sm border-b">เด็กหญิงสมศรี มีทรัพย์</td>
+                                        <td class="py-2 px-3 text-sm border-b">ม.3/1</td>
+                                        <td class="py-2 px-3 text-sm border-b">1,500 บาท</td>
+                                    </tr>
+                                    <tr>
+                                        <td class="py-2 px-3 text-sm border-b">3</td>
+                                        <td class="py-2 px-3 text-sm border-b">63003</td>
+                                        <td class="py-2 px-3 text-sm border-b">เด็กชายวิชัย รักการออม</td>
+                                        <td class="py-2 px-3 text-sm border-b">ม.3/2</td>
+                                        <td class="py-2 px-3 text-sm border-b">2,000 บาท</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                            
+                            <div class="mt-8 text-right">
+                                <p class="text-sm">ออกรายงาน ณ วันที่ 15 มิถุนายน 2566</p>
+                                <p class="text-sm mt-6">ลงชื่อ ................................................</p>
+                                <p class="text-sm mt-1">(นายอุดร มะโนเนือง)</p>
+                                <p class="text-sm">ผู้จัดทำรายงาน</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="mt-4 flex justify-center">
+                        <button onclick="downloadPDFExample()" class="bg-green-600 hover:bg-green-700 text-white px-6 py-2 rounded-md transition duration-300 flex items-center">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
+                            </svg>
+                            ดาวน์โหลดตัวอย่าง PDF
+                        </button>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Savings Section -->
+            <section id="savings" class="section hidden">
+                <div class="bg-white rounded-lg shadow-md p-6">
+                    <h2 class="text-2xl font-bold text-gray-800 mb-4">บันทึกการออม</h2>
+                    
+                    <!-- Search and Filter -->
+                    <div class="flex flex-col md:flex-row gap-4 mb-6">
+                        <div class="flex-1">
+                            <label class="block text-sm font-medium text-gray-700 mb-1">ค้นหา</label>
+                            <div class="relative">
+                                <input type="text" id="savingsSearchInput" placeholder="ค้นหาชื่อนักเรียน..." class="search-input w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-gray-400 absolute right-3 top-2.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                                </svg>
+                            </div>
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">เลือกชั้นเรียน</label>
+                            <select id="savingsClassFilter" class="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500">
+                                <option value="all">ทุกชั้นเรียน</option>
+                                <option value="ม.3/1">ม.3/1</option>
+                                <option value="ม.3/2">ม.3/2</option>
+                                <option value="ม.3/3">ม.3/3</option>
+                            </select>
+                        </div>
+                    </div>
+                    
+                    <!-- Savings Form -->
+                    <div class="bg-gray-50 p-4 rounded-lg border border-gray-200 mb-6">
+                        <h3 class="text-lg font-semibold mb-3">บันทึกการออมใหม่</h3>
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-1">รหัสนักเรียน</label>
+                                <input type="text" id="studentId" class="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500">
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-1">จำนวนเงิน (บาท)</label>
+                                <input type="number" id="savingAmount" min="1" class="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500">
+                            </div>
+                            <div class="flex items-end">
+                                <button onclick="addSaving()" class="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-md transition duration-300 w-full">
+                                    บันทึกการออม
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Student Savings Table -->
+                    <div class="overflow-x-auto">
+                        <table class="min-w-full bg-white border border-gray-200">
+                            <thead>
+                                <tr class="bg-gray-100">
+                                    <th class="py-3 px-4 text-left text-sm font-semibold text-gray-700 border-b">ลำดับ</th>
+                                    <th class="py-3 px-4 text-left text-sm font-semibold text-gray-700 border-b">รหัสนักเรียน</th>
+                                    <th class="py-3 px-4 text-left text-sm font-semibold text-gray-700 border-b">ชื่อ-นามสกุล</th>
+                                    <th class="py-3 px-4 text-left text-sm font-semibold text-gray-700 border-b">ชั้น</th>
+                                    <th class="py-3 px-4 text-left text-sm font-semibold text-gray-700 border-b">ยอดออมสะสม</th>
+                                    <th class="py-3 px-4 text-center text-sm font-semibold text-gray-700 border-b">จัดการ</th>
+                                </tr>
+                            </thead>
+                            <tbody id="savingsTable">
+                                <!-- Table data will be populated by JavaScript -->
+                            </tbody>
+                        </table>
+                    </div>
+                    
+                    <!-- Pagination -->
+                    <div class="flex justify-between items-center mt-4">
+                        <div class="text-sm text-gray-600">
+                            แสดง <span id="savingsStartRecord">1</span> ถึง <span id="savingsEndRecord">10</span> จาก <span id="savingsTotalRecords">0</span> รายการ
+                        </div>
+                        <div class="flex space-x-1">
+                            <button id="savingsPrevPage" class="pagination-btn px-3 py-1 rounded border border-gray-300 text-sm disabled:opacity-50 disabled:cursor-not-allowed">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
+                                </svg>
+                            </button>
+                            <div id="savingsPageNumbers" class="flex space-x-1">
+                                <!-- Page numbers will be populated by JavaScript -->
+                            </div>
+                            <button id="savingsNextPage" class="pagination-btn px-3 py-1 rounded border border-gray-300 text-sm">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+                                </svg>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </main>
+
+        <!-- Footer -->
+        <footer class="bg-gray-800 text-white py-4">
+            <div class="container mx-auto px-4 text-center">
+                <p>© 2023 ระบบออมทรัพย์นักเรียน ม.3 โดยครู อุดร มะโนเนือง</p>
+            </div>
+        </footer>
+    </div>
+
+    <!-- Modal for Saving History -->
+    <div id="savingHistoryModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 hidden">
+        <div class="bg-white rounded-lg shadow-lg p-6 w-full max-w-2xl">
+            <div class="flex justify-between items-center mb-4">
+                <h3 class="text-xl font-bold text-gray-800">ประวัติการออม</h3>
+                <button onclick="closeSavingHistoryModal()" class="text-gray-500 hover:text-gray-700">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                    </svg>
+                </button>
+            </div>
+            <div id="studentInfo" class="mb-4 p-3 bg-gray-50 rounded-md">
+                <!-- Student info will be populated by JavaScript -->
+            </div>
+            <div class="overflow-x-auto">
+                <table class="min-w-full bg-white border border-gray-200">
+                    <thead>
+                        <tr class="bg-gray-100">
+                            <th class="py-2 px-4 text-left text-sm font-semibold text-gray-700 border-b">วันที่</th>
+                            <th class="py-2 px-4 text-left text-sm font-semibold text-gray-700 border-b">จำนวนเงิน</th>
+                            <th class="py-2 px-4 text-left text-sm font-semibold text-gray-700 border-b">บันทึกโดย</th>
+                        </tr>
+                    </thead>
+                    <tbody id="savingHistoryTable">
+                        <!-- Table data will be populated by JavaScript -->
+                    </tbody>
+                </table>
+            </div>
+            <div class="mt-6 flex justify-end">
+                <button onclick="closeSavingHistoryModal()" class="bg-gray-500 hover:bg-gray-600 text-white px-4 py-2 rounded-md transition duration-300">
+                    ปิด
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Sample data
+        let students = [
+            { id: "63001", name: "เด็กชายสมชาย ใจดี", classroom: "ม.3/1", totalSavings: 1250, lastSaving: "10/06/2566" },
+            { id: "63002", name: "เด็กหญิงสมศรี มีทรัพย์", classroom: "ม.3/1", totalSavings: 1500, lastSaving: "12/06/2566" },
+            { id: "63003", name: "เด็กชายวิชัย รักการออม", classroom: "ม.3/2", totalSavings: 2000, lastSaving: "15/06/2566" },
+            { id: "63004", name: "เด็กหญิงวิภา ออมเงิน", classroom: "ม.3/2", totalSavings: 1800, lastSaving: "14/06/2566" },
+            { id: "63005", name: "เด็กชายสมบัติ มั่งมี", classroom: "ม.3/1", totalSavings: 2200, lastSaving: "13/06/2566" },
+            { id: "63006", name: "เด็กหญิงนภา ใจงาม", classroom: "ม.3/3", totalSavings: 1350, lastSaving: "11/06/2566" },
+            { id: "63007", name: "เด็กชายภูมิ ภูมิใจ", classroom: "ม.3/3", totalSavings: 1650, lastSaving: "10/06/2566" },
+            { id: "63008", name: "เด็กหญิงกมลา รักเรียน", classroom: "ม.3/2", totalSavings: 1950, lastSaving: "15/06/2566" },
+            { id: "63009", name: "เด็กชายธนา มีเงิน", classroom: "ม.3/1", totalSavings: 2100, lastSaving: "12/06/2566" },
+            { id: "63010", name: "เด็กหญิงรัตนา สุขใจ", classroom: "ม.3/3", totalSavings: 1400, lastSaving: "14/06/2566" },
+            { id: "63011", name: "เด็กชายอนันต์ ยั่งยืน", classroom: "ม.3/2", totalSavings: 1750, lastSaving: "13/06/2566" },
+            { id: "63012", name: "เด็กหญิงสุดา มีสุข", classroom: "ม.3/1", totalSavings: 1900, lastSaving: "11/06/2566" }
+        ];
+
+        // Sample saving history data
+        const savingHistories = {
+            "63001": [
+                { date: "10/06/2566", amount: 100, recordedBy: "ครูอุดร" },
+                { date: "03/06/2566", amount: 150, recordedBy: "ครูอุดร" },
+                { date: "27/05/2566", amount: 200, recordedBy: "ครูอุดร" },
+                { date: "20/05/2566", amount: 300, recordedBy: "ครูอุดร" },
+                { date: "13/05/2566", amount: 250, recordedBy: "ครูอุดร" },
+                { date: "06/05/2566", amount: 250, recordedBy: "ครูอุดร" }
+            ]
+        };
+
+        // Initialize localStorage if not exists
+        if (!localStorage.getItem('students')) {
+            localStorage.setItem('students', JSON.stringify(students));
+        } else {
+            students = JSON.parse(localStorage.getItem('students'));
+        }
+
+        if (!localStorage.getItem('savingHistories')) {
+            localStorage.setItem('savingHistories', JSON.stringify(savingHistories));
+        }
+
+        // Variables for pagination
+        let currentPage = 1;
+        let savingsCurrentPage = 1;
+        const recordsPerPage = 10;
+
+        // Initialize charts
+        function initCharts() {
+            // Pie Chart
+            const pieCtx = document.getElementById('pieChart').getContext('2d');
+            const pieData = {
+                labels: ['ม.3/1', 'ม.3/2', 'ม.3/3'],
+                datasets: [{
+                    data: [8950, 7500, 4400],
+                    backgroundColor: [
+                        'rgba(16, 185, 129, 0.7)',
+                        'rgba(59, 130, 246, 0.7)',
+                        'rgba(249, 115, 22, 0.7)'
+                    ],
+                    borderColor: [
+                        'rgba(16, 185, 129, 1)',
+                        'rgba(59, 130, 246, 1)',
+                        'rgba(249, 115, 22, 1)'
+                    ],
+                    borderWidth: 1
+                }]
+            };
+            
+            new Chart(pieCtx, {
+                type: 'pie',
+                data: pieData,
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            position: 'bottom'
+                        }
+                    }
+                }
+            });
+
+            // Bar Chart
+            const barCtx = document.getElementById('barChart').getContext('2d');
+            const barData = {
+                labels: ['ม.ค.', 'ก.พ.', 'มี.ค.', 'เม.ย.', 'พ.ค.', 'มิ.ย.'],
+                datasets: [{
+                    label: 'ยอดออมรวม (บาท)',
+                    data: [5000, 6200, 7500, 6800, 8200, 9000],
+                    backgroundColor: 'rgba(16, 185, 129, 0.7)',
+                    borderColor: 'rgba(16, 185, 129, 1)',
+                    borderWidth: 1
+                }]
+            };
+            
+            new Chart(barCtx, {
+                type: 'bar',
+                data: barData,
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        y: {
+                            beginAtZero: true
+                        }
+                    },
+                    plugins: {
+                        legend: {
+                            position: 'bottom'
+                        }
+                    }
+                }
+            });
+        }
+
+        // Show section
+        function showSection(sectionId) {
+            // Hide all sections
+            document.querySelectorAll('.section').forEach(section => {
+                section.classList.add('hidden');
+            });
+            
+            // Show selected section
+            document.getElementById(sectionId).classList.remove('hidden');
+            
+            // Update menu items
+            document.querySelectorAll('.menu-item').forEach(item => {
+                item.classList.remove('active');
+            });
+            
+            // Find the button that triggered this and add active class
+            const buttons = document.querySelectorAll('.menu-item');
+            for (let i = 0; i < buttons.length; i++) {
+                if (buttons[i].getAttribute('onclick').includes(sectionId)) {
+                    buttons[i].classList.add('active');
+                    break;
+                }
+            }
+            
+            // Refresh data display
+            if (sectionId === 'dashboard') {
+                displayStudents();
+            } else if (sectionId === 'savings') {
+                displaySavingsStudents();
+            }
+        }
+
+        // Filter and display students for dashboard
+        function displayStudents() {
+            const searchInput = document.getElementById('searchInput').value.toLowerCase();
+            const classFilter = document.getElementById('classFilter').value;
+            
+            let filteredStudents = students.filter(student => {
+                const matchesSearch = student.name.toLowerCase().includes(searchInput) || 
+                                     student.id.toLowerCase().includes(searchInput);
+                const matchesClass = classFilter === 'all' || student.classroom === classFilter;
+                
+                return matchesSearch && matchesClass;
+            });
+            
+            // Pagination
+            const totalPages = Math.ceil(filteredStudents.length / recordsPerPage);
+            if (currentPage > totalPages && totalPages > 0) {
+                currentPage = totalPages;
+            }
+            
+            const start = (currentPage - 1) * recordsPerPage;
+            const end = Math.min(start + recordsPerPage, filteredStudents.length);
+            const paginatedStudents = filteredStudents.slice(start, end);
+            
+            // Update table
+            const tableBody = document.getElementById('studentTable');
+            tableBody.innerHTML = '';
+            
+            if (paginatedStudents.length === 0) {
+                const row = document.createElement('tr');
+                row.innerHTML = `<td colspan="7" class="py-4 px-4 text-center text-gray-500">ไม่พบข้อมูลนักเรียน</td>`;
+                tableBody.appendChild(row);
+            } else {
+                paginatedStudents.forEach((student, index) => {
+                    const row = document.createElement('tr');
+                    row.className = index % 2 === 0 ? 'bg-white' : 'bg-gray-50';
+                    row.innerHTML = `
+                        <td class="py-3 px-4 text-sm border-b">${start + index + 1}</td>
+                        <td class="py-3 px-4 text-sm border-b">${student.id}</td>
+                        <td class="py-3 px-4 text-sm border-b">${student.name}</td>
+                        <td class="py-3 px-4 text-sm border-b">${student.classroom}</td>
+                        <td class="py-3 px-4 text-sm border-b">${student.totalSavings.toLocaleString()} บาท</td>
+                        <td class="py-3 px-4 text-sm border-b">${student.lastSaving}</td>
+                        <td class="py-3 px-4 text-sm border-b">
+                            <button onclick="viewSavingHistory('${student.id}')" class="text-blue-600 hover:text-blue-800" title="ดูประวัติการออม">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                                </svg>
+                            </button>
+                        </td>
+                    `;
+                    tableBody.appendChild(row);
+                });
+            }
+            
+            // Update pagination info
+            document.getElementById('startRecord').textContent = filteredStudents.length > 0 ? start + 1 : 0;
+            document.getElementById('endRecord').textContent = end;
+            document.getElementById('totalRecords').textContent = filteredStudents.length;
+            
+            // Update pagination buttons
+            updatePagination(totalPages, currentPage, 'pageNumbers', 'prevPage', 'nextPage', (page) => {
+                currentPage = page;
+                displayStudents();
+            });
+        }
+
+        // Filter and display students for savings
+        function displaySavingsStudents() {
+            const searchInput = document.getElementById('savingsSearchInput').value.toLowerCase();
+            const classFilter = document.getElementById('savingsClassFilter').value;
+            
+            let filteredStudents = students.filter(student => {
+                const matchesSearch = student.name.toLowerCase().includes(searchInput) || 
+                                     student.id.toLowerCase().includes(searchInput);
+                const matchesClass = classFilter === 'all' || student.classroom === classFilter;
+                
+                return matchesSearch && matchesClass;
+            });
+            
+            // Pagination
+            const totalPages = Math.ceil(filteredStudents.length / recordsPerPage);
+            if (savingsCurrentPage > totalPages && totalPages > 0) {
+                savingsCurrentPage = totalPages;
+            }
+            
+            const start = (savingsCurrentPage - 1) * recordsPerPage;
+            const end = Math.min(start + recordsPerPage, filteredStudents.length);
+            const paginatedStudents = filteredStudents.slice(start, end);
+            
+            // Update table
+            const tableBody = document.getElementById('savingsTable');
+            tableBody.innerHTML = '';
+            
+            if (paginatedStudents.length === 0) {
+                const row = document.createElement('tr');
+                row.innerHTML = `<td colspan="6" class="py-4 px-4 text-center text-gray-500">ไม่พบข้อมูลนักเรียน</td>`;
+                tableBody.appendChild(row);
+            } else {
+                paginatedStudents.forEach((student, index) => {
+                    const row = document.createElement('tr');
+                    row.className = index % 2 === 0 ? 'bg-white' : 'bg-gray-50';
+                    row.innerHTML = `
+                        <td class="py-3 px-4 text-sm border-b">${start + index + 1}</td>
+                        <td class="py-3 px-4 text-sm border-b">${student.id}</td>
+                        <td class="py-3 px-4 text-sm border-b">${student.name}</td>
+                        <td class="py-3 px-4 text-sm border-b">${student.classroom}</td>
+                        <td class="py-3 px-4 text-sm border-b">${student.totalSavings.toLocaleString()} บาท</td>
+                        <td class="py-3 px-4 text-center border-b">
+                            <div class="flex justify-center space-x-2">
+                                <button onclick="showSavingForm('${student.id}')" class="action-btn action-btn-save text-white p-2 rounded-full transition duration-300" title="บันทึกการออม">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
+                                    </svg>
+                                </button>
+                                <button onclick="viewSavingHistory('${student.id}')" class="action-btn action-btn-history text-white p-2 rounded-full transition duration-300" title="ประวัติการออม">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                    </svg>
+                                </button>
+                            </div>
+                        </td>
+                    `;
+                    tableBody.appendChild(row);
+                });
+            }
+            
+            // Update pagination info
+            document.getElementById('savingsStartRecord').textContent = filteredStudents.length > 0 ? start + 1 : 0;
+            document.getElementById('savingsEndRecord').textContent = end;
+            document.getElementById('savingsTotalRecords').textContent = filteredStudents.length;
+            
+            // Update pagination buttons
+            updatePagination(totalPages, savingsCurrentPage, 'savingsPageNumbers', 'savingsPrevPage', 'savingsNextPage', (page) => {
+                savingsCurrentPage = page;
+                displaySavingsStudents();
+            });
+        }
+
+        // Update pagination controls
+        function updatePagination(totalPages, currentPage, pageNumbersId, prevPageId, nextPageId, callback) {
+            const pageNumbers = document.getElementById(pageNumbersId);
+            pageNumbers.innerHTML = '';
+            
+            // Create page number buttons
+            for (let i = 1; i <= totalPages; i++) {
+                const pageBtn = document.createElement('button');
+                pageBtn.className = `pagination-btn px-3 py-1 rounded border ${i === currentPage ? 'bg-green-600 text-white' : 'border-gray-300 text-gray-700'} text-sm`;
+                pageBtn.textContent = i;
+                pageBtn.onclick = () => callback(i);
+                pageNumbers.appendChild(pageBtn);
+            }
+            
+            // Update prev/next buttons
+            const prevPageBtn = document.getElementById(prevPageId);
+            const nextPageBtn = document.getElementById(nextPageId);
+            
+            prevPageBtn.disabled = currentPage === 1;
+            prevPageBtn.classList.toggle('disabled', currentPage === 1);
+            prevPageBtn.onclick = () => callback(currentPage - 1);
+            
+            nextPageBtn.disabled = currentPage === totalPages || totalPages === 0;
+            nextPageBtn.classList.toggle('disabled', currentPage === totalPages || totalPages === 0);
+            nextPageBtn.onclick = () => callback(currentPage + 1);
+        }
+
+        // Show saving form with student ID pre-filled
+        function showSavingForm(studentId) {
+            document.getElementById('studentId').value = studentId;
+            document.getElementById('savingAmount').value = '';
+            document.getElementById('savingAmount').focus();
+        }
+
+        // Add new saving record
+        function addSaving() {
+            const studentId = document.getElementById('studentId').value;
+            const amount = parseInt(document.getElementById('savingAmount').value);
+            
+            if (!studentId || isNaN(amount) || amount <= 0) {
+                alert('กรุณากรอกรหัสนักเรียนและจำนวนเงินให้ถูกต้อง');
+                return;
+            }
+            
+            // Find student
+            const studentIndex = students.findIndex(s => s.id === studentId);
+            if (studentIndex === -1) {
+                alert('ไม่พบข้อมูลนักเรียน');
+                return;
+            }
+            
+            // Update student data
+            students[studentIndex].totalSavings += amount;
+            
+            // Get current date in Thai format
+            const today = new Date();
+            const day = today.getDate().toString().padStart(2, '0');
+            const month = (today.getMonth() + 1).toString().padStart(2, '0');
+            const year = today.getFullYear() + 543; // Convert to Buddhist Era
+            const thaiDate = `${day}/${month}/${year}`;
+            
+            students[studentIndex].lastSaving = thaiDate;
+            
+            // Add to saving history
+            const savingHistories = JSON.parse(localStorage.getItem('savingHistories')) || {};
+            if (!savingHistories[studentId]) {
+                savingHistories[studentId] = [];
+            }
+            
+            savingHistories[studentId].unshift({
+                date: thaiDate,
+                amount: amount,
+                recordedBy: "ครูอุดร"
+            });
+            
+            // Save to localStorage
+            localStorage.setItem('students', JSON.stringify(students));
+            localStorage.setItem('savingHistories', JSON.stringify(savingHistories));
+            
+            // Clear form and refresh display
+            document.getElementById('studentId').value = '';
+            document.getElementById('savingAmount').value = '';
+            displaySavingsStudents();
+            
+            alert('บันทึกการออมเรียบร้อยแล้ว');
+        }
+
+        // View saving history
+        function viewSavingHistory(studentId) {
+            const student = students.find(s => s.id === studentId);
+            if (!student) return;
+            
+            // Get saving history
+            const savingHistories = JSON.parse(localStorage.getItem('savingHistories')) || {};
+            const history = savingHistories[studentId] || [];
+            
+            // Update modal content
+            const studentInfo = document.getElementById('studentInfo');
+            studentInfo.innerHTML = `
+                <div class="flex justify-between">
+                    <div>
+                        <p class="font-semibold">${student.name}</p>
+                        <p class="text-sm text-gray-600">รหัสนักเรียน: ${student.id} | ชั้น: ${student.classroom}</p>
+                    </div>
+                    <div class="text-right">
+                        <p class="font-semibold text-green-600">${student.totalSavings.toLocaleString()} บาท</p>
+                        <p class="text-sm text-gray-600">ยอดออมสะสม</p>
+                    </div>
+                </div>
+            `;
+            
+            const historyTable = document.getElementById('savingHistoryTable');
+            historyTable.innerHTML = '';
+            
+            if (history.length === 0) {
+                historyTable.innerHTML = `<tr><td colspan="3" class="py-4 px-4 text-center text-gray-500">ไม่พบประวัติการออม</td></tr>`;
+            } else {
+                history.forEach((record, index) => {
+                    const row = document.createElement('tr');
+                    row.className = index % 2 === 0 ? 'bg-white' : 'bg-gray-50';
+                    row.innerHTML = `
+                        <td class="py-2 px-4 text-sm border-b">${record.date}</td>
+                        <td class="py-2 px-4 text-sm border-b">${record.amount.toLocaleString()} บาท</td>
+                        <td class="py-2 px-4 text-sm border-b">${record.recordedBy}</td>
+                    `;
+                    historyTable.appendChild(row);
+                });
+            }
+            
+            // Show modal
+            document.getElementById('savingHistoryModal').classList.remove('hidden');
+        }
+
+        // Close saving history modal
+        function closeSavingHistoryModal() {
+            document.getElementById('savingHistoryModal').classList.add('hidden');
+        }
+
+        // Generate PDF
+        function generatePDF() {
+            alert('กำลังสร้างไฟล์ PDF กรุณารอสักครู่...');
+            
+            // In a real application, this would generate a PDF based on the current data
+            setTimeout(() => {
+                alert('สร้างไฟล์ PDF เรียบร้อยแล้ว');
+            }, 1000);
+        }
+
+        // Download PDF example
+        function downloadPDFExample() {
+            alert('กำลังดาวน์โหลดตัวอย่าง PDF กรุณารอสักครู่...');
+            
+            // In a real application, this would download the example PDF
+            setTimeout(() => {
+                alert('ดาวน์โหลดตัวอย่าง PDF เรียบร้อยแล้ว');
+            }, 1000);
+        }
+
+        // Initialize the application
+        window.onload = function() {
+            initCharts();
+            displayStudents();
+            
+            // Set up event listeners for search and filter
+            document.getElementById('searchInput').addEventListener('input', displayStudents);
+            document.getElementById('classFilter').addEventListener('change', displayStudents);
+            document.getElementById('savingsSearchInput').addEventListener('input', displaySavingsStudents);
+            document.getElementById('savingsClassFilter').addEventListener('change', displaySavingsStudents);
+        };
+    </script>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'94c8803902b50886',t:'MTc0OTM4Njg3OS4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+</html>
